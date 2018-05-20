@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">RemoteControllerClientRV</string>
+
+    <string name="btn_enter">Enter</string>
+    <string name="btn_rightClick">Right Click</string>
+
+    <string name="btn_leftArrow">←</string>
+    <string name="btn_upArrow">↑</string>
+    <string name="btn_downArrow">↓</string>
+    <string name="btn_rightArrow">→</string>
+
+    <string name="btn_WheelAhead">Wheel Ahead</string>
+    <string name="btn_WheelBackward">Wheel Backward</string>
+
+    <string name="btn_button01">Button 01</string>
+    <string name="btn_button02">Button 02</string>
+    <string name="btn_button03">Button 03</string>
+    <string name="btn_button04">Button 04</string>
+    <string name="btn_button05">Button 05</string>
+    <string name="btn_button06">Button 06</string>
+    <string name="btn_button07">Button 07</string>
+    <string name="btn_button08">Button 08</string>
+    <string name="btn_button09">Button 09</string>
+</resources>

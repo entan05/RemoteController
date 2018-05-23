@@ -21,4 +21,9 @@
     <string name="btn_button07">Button 07</string>
     <string name="btn_button08">Button 08</string>
     <string name="btn_button09">Button 09</string>
+
+    <string name="dialog_ip_hint">IP Address</string>
+    <string name="dialog_port_hint">Port</string>
+
+    <string name="redis_state">Redis→%s:%s</string>
 </resources>

@@ -26,4 +26,6 @@
     <string name="dialog_port_hint">Port</string>
 
     <string name="redis_state">Redis→%s:%s</string>
+    <string name="none_ip">---.---.-.-</string>
+    <string name="none_port">----</string>
 </resources>

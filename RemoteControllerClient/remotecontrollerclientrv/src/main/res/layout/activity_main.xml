@@ -5,14 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="jp.team.e_works.remotecontrollerclientrv.MainActivity">
+    tools:context="jp.team.e_works.remotecontrollerclientrv.Activity.MainActivity">
 
     <TextView
         android:id="@+id/redis_state"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:background="@color/colorAccent"
+        android:background="@color/powderblue"
         app:layout_constraintTop_toTopOf="parent"
         android:text="@string/redis_state"/>
 

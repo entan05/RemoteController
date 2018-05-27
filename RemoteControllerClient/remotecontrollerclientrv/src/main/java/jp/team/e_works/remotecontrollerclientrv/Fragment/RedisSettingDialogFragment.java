@@ -48,27 +48,28 @@ public class RedisSettingDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View view = inflater.inflate(R.layout.dialog_layout, null);
+        final View view = inflater.inflate(R.layout.redis_setting_dialog_layout, null);
         if (!TextUtils.isEmpty(ip) && port > 0) {
             ((EditText) view.findViewById(R.id.input_ip)).setText(ip);
             ((EditText) view.findViewById(R.id.input_port)).setText("" + port);
         }
 
         builder.setView(view);
-        builder.setMessage("Redis").setNegativeButton("Close", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                String newIp = ((EditText) view.findViewById(R.id.input_ip)).getText().toString();
-                int newPort = Integer.parseInt(((EditText) view.findViewById(R.id.input_port)).getText().toString());
+        builder.setTitle(R.string.redis_setting_dialog_title)
+                .setNegativeButton(R.string.redis_setting_dialog_close, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        String newIp = ((EditText) view.findViewById(R.id.input_ip)).getText().toString();
+                        int newPort = Integer.parseInt(((EditText) view.findViewById(R.id.input_port)).getText().toString());
 
-                if (mListener != null) {
-                    if (TextUtils.isEmpty(newIp) || newPort <= 0) {
-                        mListener.onSetting(ip, port);
-                    } else {
-                        mListener.onSetting(newIp, newPort);
+                        if (mListener != null) {
+                            if (TextUtils.isEmpty(newIp) || newPort <= 0) {
+                                mListener.onSetting(ip, port);
+                            } else {
+                                mListener.onSetting(newIp, newPort);
+                            }
+                        }
                     }
-                }
-            }
-        });
+                });
         return builder.create();
     }
 }

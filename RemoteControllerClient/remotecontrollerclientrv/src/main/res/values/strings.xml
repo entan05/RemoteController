@@ -22,10 +22,26 @@
     <string name="btn_button08">Button 08</string>
     <string name="btn_button09">Button 09</string>
 
-    <string name="dialog_ip_hint">IP Address</string>
-    <string name="dialog_port_hint">Port</string>
+    <string name="redis_setting_dialog_title">Redis</string>
+    <string name="redis_setting_dialog_close">Close</string>
+    <string name="redis_setting_dialog_ip_hint">IP Address</string>
+    <string name="redis_setting_dialog_port_hint">Port</string>
 
     <string name="redis_state">Redis→%s:%s</string>
     <string name="none_ip">---.---.-.-</string>
     <string name="none_port">----</string>
+
+    <string name="mkdir_failed">oops sorry&#8230;\nmake directory failed&#8230;</string>
+
+    <string name="menu_add">profile add</string>
+
+    <string name="regist_dialog_title">Profile Regist</string>
+    <string name="regist_dialog_positive_button">Regist</string>
+    <string name="regist_dialog_negative_button">Cancel</string>
+    <string name="regist_dialog_profileName">Profile Name</string>
+    <string name="regist_buttonArea">Button %s</string>
+    <string name="regist_button_name">Button Name</string>
+    <string name="regist_check_ctrl">Ctrl</string>
+    <string name="regist_check_alt">Alt</string>
+    <string name="regist_check_shift">Shift</string>
 </resources>

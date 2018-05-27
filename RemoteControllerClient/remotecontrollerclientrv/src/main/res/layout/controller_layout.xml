@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent"
+    android:background="@drawable/fragment_background">
 
     <LinearLayout
         android:id="@+id/line1"
@@ -11,21 +11,22 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent">
+
         <Button
             android:id="@+id/btn_enter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAllCaps="false"
-            android:text="@string/btn_enter"/>
+            android:text="@string/btn_enter"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/btn_rightClick"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAllCaps="false"
-            android:text="@string/btn_rightClick"/>
+            android:text="@string/btn_rightClick"
+            android:textAllCaps="false" />
     </LinearLayout>
 
     <LinearLayout
@@ -34,37 +35,38 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@id/line1">
+
         <Button
             android:id="@+id/btn_leftArrow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAllCaps="false"
-            android:text="@string/btn_leftArrow"/>
+            android:text="@string/btn_leftArrow"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/btn_upArrow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAllCaps="false"
-            android:text="@string/btn_upArrow"/>
+            android:text="@string/btn_upArrow"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/btn_downArrow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAllCaps="false"
-            android:text="@string/btn_downArrow"/>
+            android:text="@string/btn_downArrow"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/btn_rightArrow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAllCaps="false"
-            android:text="@string/btn_rightArrow"/>
+            android:text="@string/btn_rightArrow"
+            android:textAllCaps="false" />
     </LinearLayout>
 
     <LinearLayout
@@ -73,21 +75,22 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@id/line2">
+
         <Button
             android:id="@+id/btn_wheelBackward"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAllCaps="false"
-            android:text="@string/btn_WheelBackward"/>
+            android:text="@string/btn_WheelBackward"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/btn_wheelAhead"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAllCaps="false"
-            android:text="@string/btn_WheelAhead"/>
+            android:text="@string/btn_WheelAhead"
+            android:textAllCaps="false" />
     </LinearLayout>
 
     <GridLayout
@@ -95,99 +98,100 @@
         android:layout_height="wrap_content"
         android:columnCount="3"
         android:rowCount="3"
+        app:layout_constraintBottom_toTopOf="@id/line3"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/line3">
+        app:layout_constraintTop_toTopOf="parent">
+
         <Button
             android:id="@+id/btn_button01"
             android:layout_column="0"
-            android:layout_row="0"
             android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
             android:layout_gravity="fill"
-            android:textAllCaps="false"
-            android:text="@string/btn_button01"/>
+            android:layout_row="0"
+            android:layout_rowWeight="1"
+            android:text="@string/btn_button01"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/btn_button02"
             android:layout_column="1"
-            android:layout_row="0"
             android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
             android:layout_gravity="fill"
-            android:textAllCaps="false"
-            android:text="@string/btn_button02"/>
+            android:layout_row="0"
+            android:layout_rowWeight="1"
+            android:text="@string/btn_button02"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/btn_button03"
             android:layout_column="2"
-            android:layout_row="0"
             android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
             android:layout_gravity="fill"
-            android:textAllCaps="false"
-            android:text="@string/btn_button03"/>
+            android:layout_row="0"
+            android:layout_rowWeight="1"
+            android:text="@string/btn_button03"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/btn_button04"
             android:layout_column="0"
-            android:layout_row="1"
             android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
             android:layout_gravity="fill"
-            android:textAllCaps="false"
-            android:text="@string/btn_button04"/>
+            android:layout_row="1"
+            android:layout_rowWeight="1"
+            android:text="@string/btn_button04"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/btn_button05"
             android:layout_column="1"
-            android:layout_row="1"
             android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
             android:layout_gravity="fill"
-            android:textAllCaps="false"
-            android:text="@string/btn_button05"/>
+            android:layout_row="1"
+            android:layout_rowWeight="1"
+            android:text="@string/btn_button05"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/btn_button06"
             android:layout_column="2"
-            android:layout_row="1"
             android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
             android:layout_gravity="fill"
-            android:textAllCaps="false"
-            android:text="@string/btn_button06"/>
+            android:layout_row="1"
+            android:layout_rowWeight="1"
+            android:text="@string/btn_button06"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/btn_button07"
             android:layout_column="0"
-            android:layout_row="2"
             android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
             android:layout_gravity="fill"
-            android:textAllCaps="false"
-            android:text="@string/btn_button07"/>
+            android:layout_row="2"
+            android:layout_rowWeight="1"
+            android:text="@string/btn_button07"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/btn_button08"
             android:layout_column="1"
-            android:layout_row="2"
             android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
             android:layout_gravity="fill"
-            android:textAllCaps="false"
-            android:text="@string/btn_button08"/>
+            android:layout_row="2"
+            android:layout_rowWeight="1"
+            android:text="@string/btn_button08"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/btn_button09"
             android:layout_column="2"
-            android:layout_row="2"
             android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
             android:layout_gravity="fill"
-            android:textAllCaps="false"
-            android:text="@string/btn_button09"/>
+            android:layout_row="2"
+            android:layout_rowWeight="1"
+            android:text="@string/btn_button09"
+            android:textAllCaps="false" />
     </GridLayout>
 
 </android.support.constraint.ConstraintLayout>

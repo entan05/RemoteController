@@ -1,26 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="jp.team.e_works.remotecontrollerclientrv.Activity.MainActivity">
 
+    <Toolbar
+        android:id="@+id/main_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:colorPrimary"
+        android:minHeight="?android:actionBarSize" />
+
     <TextView
         android:id="@+id/redis_state"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:layout_below="@id/main_toolbar"
         android:background="@color/powderblue"
-        app:layout_constraintTop_toTopOf="parent"
-        android:text="@string/redis_state"/>
+        android:gravity="center"
+        android:text="@string/redis_state" />
+
+    <ListView
+        android:id="@+id/list_area"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/redis_state" />
 
     <RelativeLayout
         android:id="@+id/fragment_area"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/redis_state"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        android:layout_height="match_parent"
+        android:layout_below="@id/redis_state" />
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

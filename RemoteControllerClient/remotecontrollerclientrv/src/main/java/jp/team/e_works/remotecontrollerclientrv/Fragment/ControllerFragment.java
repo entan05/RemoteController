@@ -1,7 +1,6 @@
 package jp.team.e_works.remotecontrollerclientrv.Fragment;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.CheckResult;
 import android.text.TextUtils;
@@ -9,18 +8,41 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
+import java.util.Locale;
+
+import jp.team.e_works.inifilelib.IniFileLoader;
 import jp.team.e_works.remotecontrollerclientrv.R;
+import jp.team.e_works.remotecontrollerclientrv.obj.ControlButton;
+import jp.team.e_works.remotecontrollerclientrv.util.Const;
 import jp.team.e_works.remotecontrollerclientrv.util.RedisConst;
 
 public class ControllerFragment extends Fragment implements View.OnClickListener {
-
+    // ボタンクリックを受け取るリスナ
     public interface ControllerListener {
         void onClick2Send(String channel, String message);
     }
 
+    // iniファイルパスを取得するためのキー
     private static final String KEY_FILE_PATH = "key_iniFilePath";
 
+    // ボタン設定を格納する配列
+    private ControlButton[] mButtonDetails = new ControlButton[9];
+    // ユーザー設定ボタンID
+    private int[] mButtonIds = {
+            R.id.btn_button01,
+            R.id.btn_button02,
+            R.id.btn_button03,
+            R.id.btn_button04,
+            R.id.btn_button05,
+            R.id.btn_button06,
+            R.id.btn_button07,
+            R.id.btn_button08,
+            R.id.btn_button09
+    };
+
+    // イベントを渡すリスナ
     private ControllerListener mListener = null;
 
     @CheckResult
@@ -34,15 +56,11 @@ public class ControllerFragment extends Fragment implements View.OnClickListener
         return fragment;
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof ControllerListener) {
-            mListener = (ControllerListener) context;
-        }
-    }
-
+    /**
+     * リスナ登録
+     *
+     * @param listener 登録するリスナ
+     */
     public void setControllerListener(ControllerListener listener) {
         mListener = listener;
     }
@@ -52,9 +70,21 @@ public class ControllerFragment extends Fragment implements View.OnClickListener
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.controller_layout, container, false);
 
+        // 設定ファイルを取得する
         String filePath = getArguments().getString(KEY_FILE_PATH, null);
         if (filePath != null) {
-            // todo
+            // 設定ファイル解析処理
+            IniFileLoader loader = new IniFileLoader();
+            if (loader.load(filePath)) {
+                for (int i = 0; i < mButtonDetails.length; i++) {
+                    String buttonText = loader.getValue(null,
+                            String.format(Locale.US, Const.INI_KEY_BUTTON_X_NAME, i));
+                    int command = Integer.parseInt(loader.getValue(null,
+                            String.format(Locale.US, Const.INI_KEY_BUTTON_X_COMMAND, i)));
+
+                    mButtonDetails[i] = new ControlButton(buttonText, i, command);
+                }
+            }
         }
 
         view.findViewById(R.id.btn_enter).setOnClickListener(this);
@@ -65,15 +95,24 @@ public class ControllerFragment extends Fragment implements View.OnClickListener
         view.findViewById(R.id.btn_rightArrow).setOnClickListener(this);
         view.findViewById(R.id.btn_wheelBackward).setOnClickListener(this);
         view.findViewById(R.id.btn_wheelAhead).setOnClickListener(this);
-        view.findViewById(R.id.btn_button01).setOnClickListener(this);
-        view.findViewById(R.id.btn_button02).setOnClickListener(this);
-        view.findViewById(R.id.btn_button03).setOnClickListener(this);
-        view.findViewById(R.id.btn_button04).setOnClickListener(this);
-        view.findViewById(R.id.btn_button05).setOnClickListener(this);
-        view.findViewById(R.id.btn_button06).setOnClickListener(this);
-        view.findViewById(R.id.btn_button07).setOnClickListener(this);
-        view.findViewById(R.id.btn_button08).setOnClickListener(this);
-        view.findViewById(R.id.btn_button09).setOnClickListener(this);
+
+        // ユーザー設定ボタンの設定
+        for (int i = 0; i < mButtonIds.length; i++) {
+            Button button = view.findViewById(mButtonIds[i]);
+            if (mButtonDetails[i] != null) {
+                if (!TextUtils.isEmpty(mButtonDetails[i].getText())) {
+                    button.setText(mButtonDetails[i].getText());
+                }
+                // コマンドが登録されていないボタンは非表示にする
+                if (RedisConst.REDIS_EVENT_NONE == mButtonDetails[i].getCommand()) {
+                    button.setVisibility(View.INVISIBLE);
+                } else {
+                    button.setOnClickListener(this);
+                }
+            } else {
+                button.setVisibility(View.INVISIBLE);
+            }
+        }
 
         view.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -87,8 +126,8 @@ public class ControllerFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
-        String channel = "";
-        String messgae = "";
+        String channel = null;
+        String messgae = null;
         switch (view.getId()) {
             case R.id.btn_enter:
                 channel = RedisConst.REDIS_CHANNEL_KEYEVENT;
@@ -96,51 +135,101 @@ public class ControllerFragment extends Fragment implements View.OnClickListener
                 break;
 
             case R.id.btn_rightClick:
+                channel = RedisConst.REDIS_CHANNEL_MOUSEEVENT;
+                messgae = Integer.toString(RedisConst.REDIS_MOUSEEVENT_RIGHT_CLICK);
                 break;
 
             case R.id.btn_leftArrow:
+                channel = RedisConst.REDIS_CHANNEL_KEYEVENT;
+                messgae = Integer.toString(RedisConst.REDIS_KEYEVENT_LEFT_ARROW);
                 break;
 
             case R.id.btn_upArrow:
+                channel = RedisConst.REDIS_CHANNEL_KEYEVENT;
+                messgae = Integer.toString(RedisConst.REDIS_KEYEVENT_UP_ARROW);
                 break;
 
             case R.id.btn_downArrow:
+                channel = RedisConst.REDIS_CHANNEL_KEYEVENT;
+                messgae = Integer.toString(RedisConst.REDIS_KEYEVENT_DOWN_ARROW);
                 break;
 
             case R.id.btn_rightArrow:
+                channel = RedisConst.REDIS_CHANNEL_KEYEVENT;
+                messgae = Integer.toString(RedisConst.REDIS_KEYEVENT_RIGHT_ARROW);
                 break;
 
             case R.id.btn_wheelBackward:
+                channel = RedisConst.REDIS_CHANNEL_MOUSEEVENT;
+                messgae = Integer.toString(RedisConst.REDIS_MOUSEEVENT_WHEEL_BACKWARD);
                 break;
 
             case R.id.btn_wheelAhead:
+                channel = RedisConst.REDIS_CHANNEL_MOUSEEVENT;
+                messgae = Integer.toString(RedisConst.REDIS_MOUSEEVENT_WHEEL_AHEAD);
                 break;
 
             case R.id.btn_button01:
+                if (mButtonDetails[0] != null) {
+                    channel = RedisConst.REDIS_CHANNEL_KEYEVENT;
+                    messgae = Integer.toString(mButtonDetails[0].getCommand());
+                }
                 break;
 
             case R.id.btn_button02:
+                if (mButtonDetails[1] != null) {
+                    channel = RedisConst.REDIS_CHANNEL_KEYEVENT;
+                    messgae = Integer.toString(mButtonDetails[1].getCommand());
+                }
                 break;
 
             case R.id.btn_button03:
+                if (mButtonDetails[2] != null) {
+                    channel = RedisConst.REDIS_CHANNEL_KEYEVENT;
+                    messgae = Integer.toString(mButtonDetails[2].getCommand());
+                }
                 break;
 
             case R.id.btn_button04:
+                if (mButtonDetails[3] != null) {
+                    channel = RedisConst.REDIS_CHANNEL_KEYEVENT;
+                    messgae = Integer.toString(mButtonDetails[3].getCommand());
+                }
                 break;
 
             case R.id.btn_button05:
+                if (mButtonDetails[4] != null) {
+                    channel = RedisConst.REDIS_CHANNEL_KEYEVENT;
+                    messgae = Integer.toString(mButtonDetails[4].getCommand());
+                }
                 break;
 
             case R.id.btn_button06:
+                if (mButtonDetails[5] != null) {
+                    channel = RedisConst.REDIS_CHANNEL_KEYEVENT;
+                    messgae = Integer.toString(mButtonDetails[5].getCommand());
+                }
                 break;
 
             case R.id.btn_button07:
+                if (mButtonDetails[6] != null) {
+                    channel = RedisConst.REDIS_CHANNEL_KEYEVENT;
+                    messgae = Integer.toString(mButtonDetails[6].getCommand());
+                }
                 break;
 
             case R.id.btn_button08:
+                if (mButtonDetails[7] != null) {
+                    channel = RedisConst.REDIS_CHANNEL_KEYEVENT;
+                    messgae = Integer.toString(mButtonDetails[7].getCommand());
+                }
                 break;
 
             case R.id.btn_button09:
+                if (mButtonDetails[8] != null) {
+                    channel = RedisConst.REDIS_CHANNEL_KEYEVENT;
+                    messgae = Integer.toString(mButtonDetails[8].getCommand());
+                }
                 break;
 
             default:

@@ -194,12 +194,50 @@ namespace RemoteControllerHostRV
         {
             switch (eventCode)
             {
-                case RedisConst.VALUE_MOUSE_RIGHTCLICK:
+                case RedisConst.VALUE_MOUSE_LEFT_CLICK:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_LEFT_DOWN, 0, 0, 0, 0);
+                    mouse_event(MouseEventCode.MOUSE_EVENT_LEFT_UP, 0, 0, 0, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_LEFT_DOWN:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_LEFT_DOWN, 0, 0, 0, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_LEFT_UP:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_LEFT_UP, 0, 0, 0, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_RIGHT_CLICK:
                     mouse_event(MouseEventCode.MOUSE_EVENT_RIGHT_DOWN, 0, 0, 0, 0);
                     mouse_event(MouseEventCode.MOUSE_EVENT_RIGHT_UP, 0, 0, 0, 0);
                     break;
 
-                case RedisConst.VALUE_MOUSE_WHEELAHEAD:
+                case RedisConst.VALUE_MOUSE_RIGHT_DOWN:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_RIGHT_DOWN, 0, 0, 0, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_RIGHT_UP:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_RIGHT_UP, 0, 0, 0, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_MIDDLE_CLICK:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_MIDDLE_DOWN, 0, 0, 0, 0);
+                    mouse_event(MouseEventCode.MOUSE_EVENT_MIDDLE_UP, 0, 0, 0, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_MIDDLE_DOWN:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_MIDDLE_DOWN, 0, 0, 0, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_MIDDLE_UP:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_MIDDLE_UP, 0, 0, 0, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_WHEEL_BACKWARD:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_WHEEL, 0, 0, MouseEventCode.MOUSE_DATA_WHEEL_BACKWARD, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_WHEEL_AHEAD:
                     mouse_event(MouseEventCode.MOUSE_EVENT_WHEEL, 0, 0, MouseEventCode.MOUSE_DATA_WHEEL_AHEAD, 0);
                     break;
 

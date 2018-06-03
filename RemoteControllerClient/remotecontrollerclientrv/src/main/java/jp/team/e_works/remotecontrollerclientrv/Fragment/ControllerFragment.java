@@ -14,7 +14,7 @@ import java.util.Locale;
 
 import jp.team.e_works.inifilelib.IniFileLoader;
 import jp.team.e_works.remotecontrollerclientrv.R;
-import jp.team.e_works.remotecontrollerclientrv.obj.ControlButton;
+import jp.team.e_works.remotecontrollerclientrv.object.ControlButton;
 import jp.team.e_works.remotecontrollerclientrv.util.Const;
 import jp.team.e_works.remotecontrollerclientrv.util.RedisConst;
 

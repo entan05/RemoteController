@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -18,7 +19,8 @@ import java.util.Locale;
 import jp.team.e_works.inifilelib.IniFileWriter;
 import jp.team.e_works.inifilelib.IniItem;
 import jp.team.e_works.remotecontrollerclientrv.R;
-import jp.team.e_works.remotecontrollerclientrv.obj.ControlButton;
+import jp.team.e_works.remotecontrollerclientrv.object.ControlButton;
+import jp.team.e_works.remotecontrollerclientrv.object.SelectButtonSpinnerItem;
 import jp.team.e_works.remotecontrollerclientrv.util.Const;
 import jp.team.e_works.remotecontrollerclientrv.util.RedisConst;
 
@@ -76,6 +78,11 @@ public class ProfileRegistDialogFragment extends DialogFragment implements View.
         mCtrlCheck = view.findViewById(R.id.regist_check_ctrl);
         mAltCheck = view.findViewById(R.id.regist_check_alt);
         mShiftCheck = view.findViewById(R.id.regist_check_shift);
+
+        ArrayAdapter<SelectButtonSpinnerItem> spinnerAdapter
+                = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, SelectButtonSpinnerItem.values());
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mButtonType.setAdapter(spinnerAdapter);
 
         builder.setView(view);
         builder.setTitle(R.string.regist_dialog_title)
@@ -188,7 +195,6 @@ public class ProfileRegistDialogFragment extends DialogFragment implements View.
         }
         mButtonAreaText.setText(text);
         mButtonName.setText(mButtons[mSelectedButtonIndex].getText());
-        // todo:spinner の状態設定
         int command = mButtons[mSelectedButtonIndex].getCommand();
         if ((command & RedisConst.REDIS_KEYEVENT_CTRL) != 0) {
             mCtrlCheck.setChecked(true);
@@ -204,8 +210,16 @@ public class ProfileRegistDialogFragment extends DialogFragment implements View.
         }
         if ((command & RedisConst.REDIS_KEYEVENT_SHIFT) != 0) {
             mShiftCheck.setChecked(true);
+            command = command & (~RedisConst.REDIS_KEYEVENT_SHIFT);
         } else {
             mShiftCheck.setChecked(false);
+        }
+        // spinner の状態設定
+        SelectButtonSpinnerItem item = SelectButtonSpinnerItem.getItem(command);
+        if (item != null) {
+            mButtonType.setSelection(item.ordinal());
+        } else {
+            mButtonType.setSelection(0);
         }
     }
 
@@ -221,7 +235,9 @@ public class ProfileRegistDialogFragment extends DialogFragment implements View.
         if (mShiftCheck.isChecked()) {
             command |= RedisConst.REDIS_KEYEVENT_SHIFT;
         }
-        // todo:spinner からキーをとる
+        // spinner からキーをとる
+        SelectButtonSpinnerItem selectedButton = (SelectButtonSpinnerItem) mButtonType.getSelectedItem();
+        command |= selectedButton.getRedisCommand();
         return command;
     }
 }

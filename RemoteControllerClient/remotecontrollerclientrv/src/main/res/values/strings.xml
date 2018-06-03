@@ -32,6 +32,12 @@
     <string name="none_port">----</string>
 
     <string name="mkdir_failed">oops sorry&#8230;\nmake directory failed&#8230;</string>
+    <string name="profileDelete_failed">oops sorry&#8230;\nProfile delete failed&#8230;</string>
+
+    <string name="delete_alert_title">Check</string>
+    <string name="delete_alert_message">Do you really want to delete this?</string>
+    <string name="delete_alert_positive">Yes</string>
+    <string name="delete_alert_negative">No</string>
 
     <string name="menu_add">profile add</string>
 

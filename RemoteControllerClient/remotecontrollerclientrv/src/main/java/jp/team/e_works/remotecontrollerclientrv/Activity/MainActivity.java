@@ -21,12 +21,12 @@ import java.io.File;
 import java.util.ArrayList;
 
 import jp.team.e_works.inifilelib.IniFileLoader;
-import jp.team.e_works.remotecontrollerclientrv.Adapter.MainListAdapter;
+import jp.team.e_works.remotecontrollerclientrv.Adapter.ProfileListAdapter;
 import jp.team.e_works.remotecontrollerclientrv.Fragment.ControllerFragment;
 import jp.team.e_works.remotecontrollerclientrv.Fragment.ProfileRegistDialogFragment;
 import jp.team.e_works.remotecontrollerclientrv.Fragment.RedisSettingDialogFragment;
 import jp.team.e_works.remotecontrollerclientrv.R;
-import jp.team.e_works.remotecontrollerclientrv.obj.MainListItem;
+import jp.team.e_works.remotecontrollerclientrv.object.ProfileListItem;
 import jp.team.e_works.remotecontrollerclientrv.util.Const;
 import jp.team.e_works.remotecontrollerclientrv.util.Log;
 import redis.clients.jedis.Jedis;
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         mRedisStateView = findViewById(R.id.redis_state);
 
         if (!TextUtils.isEmpty(mIp) && mPort > 0) {
-            mRedisStateView.setText(String.format(getString(R.string.redis_state), mIp, "" + mPort));
+            mRedisStateView.setText(String.format(getString(R.string.redis_state), mIp, Integer.toString(mPort)));
         } else {
             mRedisStateView.setText(String.format(getString(R.string.redis_state),
                     getString(R.string.none_ip), getString(R.string.none_port)));
@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Profile List 更新
     private void updateMainList() {
-        ArrayList<MainListItem> listItems;
+        ArrayList<ProfileListItem> listItems;
         boolean isSkip = false;
 
         File iniDir = new File(Const.INI_DIR);
@@ -188,13 +188,14 @@ public class MainActivity extends AppCompatActivity {
             for (File file : iniFiles) {
                 if (loader.load(file.getPath())) {
                     String itemName = loader.getValue(null, Const.INI_KEY_ITEM_NAME);
-                    listItems.add(new MainListItem(itemName != null ? itemName : "", file.getPath()));
+                    listItems.add(new ProfileListItem(itemName != null ? itemName : "", file.getPath()));
                 }
             }
         }
 
         ListView listView = findViewById(R.id.list_area);
-        MainListAdapter adapter = new MainListAdapter(this, R.layout.list_item_layout, listItems);
+        ProfileListAdapter adapter = new ProfileListAdapter(this, R.layout.list_item_layout, listItems);
+        adapter.setOnProfileListUpdateRequestListener(mProfileListUpdateRequestListener);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(mOnItemClickListener);
     }
@@ -204,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
             ListView listView = (ListView) adapterView;
-            MainListItem item = (MainListItem) listView.getItemAtPosition(position);
+            ProfileListItem item = (ProfileListItem) listView.getItemAtPosition(position);
 
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
             ControllerFragment fragment = ControllerFragment.createInstance(item.getFilePath());
@@ -212,6 +213,22 @@ public class MainActivity extends AppCompatActivity {
             transaction.add(R.id.fragment_area, fragment);
             transaction.addToBackStack(null);
             transaction.commit();
+        }
+    };
+
+    private ProfileListAdapter.OnProfileListUpdateRequestListener mProfileListUpdateRequestListener
+            = new ProfileListAdapter.OnProfileListUpdateRequestListener() {
+        @Override
+        public void onProfileDeleteRequest(String filePath) {
+            File file = new File(filePath);
+            if (!file.exists()) {
+                return;
+            }
+            if (!file.delete()) {
+                Toast.makeText(MainActivity.this, getString(R.string.profileDelete_failed), Toast.LENGTH_LONG).show();
+                return;
+            }
+            updateMainList();
         }
     };
 }

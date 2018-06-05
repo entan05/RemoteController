@@ -124,47 +124,26 @@ namespace RemoteControllerHostRV
         {
             ArrayList keys = new ArrayList();
 
-            if ((keyEventCode & RedisConst.VALUE_KEY_CTRL) != 0)
+            if ((keyEventCode & (int)RedisKeyValues.VALUE_KEY_CTRL) != 0)
             {
                 keys.Add(KeyCode.KEYCODE_CTRL);
-                keyEventCode = keyEventCode & (~RedisConst.VALUE_KEY_CTRL);
+                keyEventCode = keyEventCode & (~(int)RedisKeyValues.VALUE_KEY_CTRL);
             }
 
-            if ((keyEventCode & RedisConst.VALUE_KEY_ALT) != 0)
+            if ((keyEventCode & (int)RedisKeyValues.VALUE_KEY_ALT) != 0)
             {
                 keys.Add(KeyCode.KEYCODE_ALT);
-                keyEventCode = keyEventCode & (~RedisConst.VALUE_KEY_ALT);
+                keyEventCode = keyEventCode & (~(int)RedisKeyValues.VALUE_KEY_ALT);
             }
 
-            switch (keyEventCode)
+            if ((keyEventCode & (int)RedisKeyValues.VALUE_KEY_SHIFT) != 0)
             {
-                case RedisConst.VALUE_KEY_ENTER:
-                    keys.Add(KeyCode.KEYCODE_ENTER);
-                    break;
-
-                case RedisConst.VALUE_KEY_F4:
-                    keys.Add(KeyCode.KEYCODE_F4);
-                    break;
-
-                case RedisConst.VALUE_KEY_LEFTARROW:
-                    keys.Add(KeyCode.KEYCODE_LEFT);
-                    break;
-
-                case RedisConst.VALUE_KEY_UPARROW:
-                    keys.Add(KeyCode.KEYCODE_UP);
-                    break;
-
-                case RedisConst.VALUE_KEY_RIGHTARROW:
-                    keys.Add(KeyCode.KEYCODE_RIGHT);
-                    break;
-
-                case RedisConst.VALUE_KEY_DOWNARROW:
-                    keys.Add(KeyCode.KEYCODE_DOWN);
-                    break;
-
-                default:
-                    return;
+                keys.Add(KeyCode.KEYCODE_SHIFT);
+                keyEventCode = keyEventCode & (~(int)RedisKeyValues.VALUE_KEY_SHIFT);
             }
+
+            keys.Add(((RedisKeyValues)keyEventCode).GetKeyCode());
+
             SendKeyEvents(keys);
         }
 

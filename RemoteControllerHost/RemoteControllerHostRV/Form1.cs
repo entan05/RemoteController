@@ -1,14 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using StackExchange.Redis;
@@ -27,6 +20,28 @@ namespace RemoteControllerHostRV
             InitializeComponent();
         }
 
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // disconnect処理
+            if (null != m_Subscriber)
+            {
+                m_Subscriber.UnsubscribeAll();
+                m_Subscriber = null;
+            }
+        }
+
+        private void useLocalhostCheckBox_CheckStateChanged(object sender, EventArgs e)
+        {
+            if (useLocalhostCheckBox.Checked)
+            {
+                IpBox.Enabled = false;
+            }
+            else
+            {
+                IpBox.Enabled = true;
+            }
+        }
+
         private void ConnectBtn_Click(object sender, EventArgs e)
         {
             if (m_IsConnect)
@@ -35,6 +50,7 @@ namespace RemoteControllerHostRV
                 if (null != m_Subscriber)
                 {
                     m_Subscriber.UnsubscribeAll();
+                    m_Subscriber = null;
                 }
                 IpBox.Enabled = true;
                 PortBox.Enabled = true;
@@ -43,133 +59,164 @@ namespace RemoteControllerHostRV
             }
             else
             {
+                string ip = useLocalhostCheckBox.Checked ? "localhost" : IpBox.Text;
                 // connect処理
-                if (string.IsNullOrEmpty(IpBox.Text) || string.IsNullOrEmpty(PortBox.Text))
+                if (string.IsNullOrEmpty(ip) || string.IsNullOrEmpty(PortBox.Text))
                 {
                     return;
                 }
-                ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(IpBox.Text + ":" + PortBox.Text);
-                m_Subscriber = redis.GetSubscriber();
-                m_Subscriber.Subscribe("*", (channel, message) =>
-                {
-                    Invoke(new UpdateReceiveBoxFunc(UpdateReceiveBox), channel.ToString(), message.ToString());
-                });
 
-                IpBox.Enabled = false;
-                PortBox.Enabled = false;
-                ConnectBtn.Text = "Disconnect";
-                m_IsConnect = true;
+                try
+                {
+                    ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(ip + ":" + PortBox.Text);
+                    m_Subscriber = redis.GetSubscriber();
+                    m_Subscriber.Subscribe("*", (channel, message) =>
+                    {
+                        Invoke(new UpdateReceiveBoxFunc(UpdateReceiveBox), channel.ToString(), message.ToString());
+                        Invoke(new ReceiveMessage2EventFunc(ReceiveMessage2Event), channel.ToString(), message.ToString());
+                    });
+
+                    IpBox.Enabled = false;
+                    PortBox.Enabled = false;
+                    ConnectBtn.Text = "Disconnect";
+                    m_IsConnect = true;
+                }
+                catch (Exception)
+                {
+
+                }
             }
         }
 
+        /// <summary>
+        /// 表示イベントログを更新する
+        /// </summary>
         private void UpdateReceiveBox(string channel, string message)
         {
             ReceiveBox.Text += "[" + channel + "]" + message + "\r\n";
             ReceiveBox.Update();
             ReceiveBox.Select(ReceiveBox.Text.Length, 0);
             ReceiveBox.ScrollToCaret();
+        }
 
-            if(RedisConst.CHANNEL_KEY_EVENT == channel)
+        /// <summary>
+        /// 受け取ったメッセージからイベントを発行する
+        /// </summary>
+        /// <param name="channel">メッセージを受け取ったchannel</param>
+        /// <param name="message">メッセージ</param>
+        private void ReceiveMessage2Event(string channel, string message)
+        {
+            if (RedisConst.CHANNEL_KEY_EVENT == channel)
             {
                 CheckKeyEventCode(int.Parse(message));
             }
-            else if(RedisConst.CHANNEL_MOUSE_EVENT == channel)
+            else if (RedisConst.CHANNEL_MOUSE_EVENT == channel)
             {
                 SendMouseEvent(int.Parse(message));
             }
         }
 
+        /// <summary>
+        /// キーイベントコードを解析し、イベントを発行する
+        /// </summary>
+        /// <param name="keyEventCode">Redisから受け取ったキーイベントコード</param>
         private void CheckKeyEventCode(int keyEventCode)
         {
             ArrayList keys = new ArrayList();
-            
-            if((keyEventCode & RedisConst.VALUE_KEY_CTRL) != 0)
+
+            if ((keyEventCode & (int)RedisKeyValues.VALUE_KEY_CTRL) != 0)
             {
                 keys.Add(KeyCode.KEYCODE_CTRL);
-                keyEventCode = keyEventCode & (~RedisConst.VALUE_KEY_CTRL);
+                keyEventCode = keyEventCode & (~(int)RedisKeyValues.VALUE_KEY_CTRL);
             }
-            
-            if((keyEventCode & RedisConst.VALUE_KEY_ALT) != 0)
+
+            if ((keyEventCode & (int)RedisKeyValues.VALUE_KEY_ALT) != 0)
             {
                 keys.Add(KeyCode.KEYCODE_ALT);
-                keyEventCode = keyEventCode & (~RedisConst.VALUE_KEY_ALT);
+                keyEventCode = keyEventCode & (~(int)RedisKeyValues.VALUE_KEY_ALT);
             }
-            
-            switch (keyEventCode)
+
+            if ((keyEventCode & (int)RedisKeyValues.VALUE_KEY_SHIFT) != 0)
             {
-                case RedisConst.VALUE_KEY_ENTER:
-                    keys.Add(KeyCode.KEYCODE_ENTER);
-                    break;
-
-                case RedisConst.VALUE_KEY_F4:
-                    keys.Add(KeyCode.KEYCODE_F4);
-                    break;
-
-                case RedisConst.VALUE_KEY_LEFTARROW:
-                    keys.Add(KeyCode.KEYCODE_LEFT);
-                    break;
-
-                case RedisConst.VALUE_KEY_UPARROW:
-                    keys.Add(KeyCode.KEYCODE_UP);
-                    break;
-
-                case RedisConst.VALUE_KEY_RIGHTARROW:
-                    keys.Add(KeyCode.KEYCODE_RIGHT);
-                    break;
-
-                case RedisConst.VALUE_KEY_DOWNARROW:
-                    keys.Add(KeyCode.KEYCODE_DOWN);
-                    break;
-
-                default:
-                    return;
+                keys.Add(KeyCode.KEYCODE_SHIFT);
+                keyEventCode = keyEventCode & (~(int)RedisKeyValues.VALUE_KEY_SHIFT);
             }
+
+            keys.Add(((RedisKeyValues)keyEventCode).GetKeyCode());
+
             SendKeyEvents(keys);
         }
 
+        /// <summary>
+        /// 複数のキーイベントを発行する
+        /// </summary>
+        /// <param name="keys">発行するキーイベントのリスト</param>
         private void SendKeyEvents(ArrayList keys)
         {
-            for(int i = 0; i < keys.Count; i++)
+            for (int i = 0; i < keys.Count; i++)
             {
                 keybd_event((byte)keys[i], 0, 0, (UIntPtr)0);
                 Thread.Sleep(50);
             }
             keys.Reverse();
-            for(int i = 0; i < keys.Count; i++)
+            for (int i = 0; i < keys.Count; i++)
             {
                 keybd_event((byte)keys[i], 0, 2, (UIntPtr)0);
             }
         }
 
-        // 単一のキーイベントを発行する
-        private void SendSingleKeyEvent(byte keycode)
-        {
-            keybd_event(keycode, 0, 0, (UIntPtr)0);
-            Thread.Sleep(50);
-            keybd_event(keycode, 0, 2, (UIntPtr)0);
-        }
-
-        private void SendDoubleKeyEvent(byte keycode1, byte keycode2)
-        {
-            keybd_event(keycode1, 0, 0, (UIntPtr)0);
-            Thread.Sleep(50);
-            keybd_event(keycode2, 0, 0, (UIntPtr)0);
-            Thread.Sleep(50);
-
-            keybd_event(keycode2, 0, 2, (UIntPtr)0);
-            keybd_event(keycode1, 0, 2, (UIntPtr)0);
-        }
-
+        /// <summary>
+        /// マウスイベントを送信する
+        /// </summary>
+        /// <param name="eventCode">Redisで送信されたイベントコード</param>
         private void SendMouseEvent(int eventCode)
         {
-            switch(eventCode)
+            switch (eventCode)
             {
-                case RedisConst.VALUE_MOUSE_RIGHTCLICK:
+                case RedisConst.VALUE_MOUSE_LEFT_CLICK:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_LEFT_DOWN, 0, 0, 0, 0);
+                    mouse_event(MouseEventCode.MOUSE_EVENT_LEFT_UP, 0, 0, 0, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_LEFT_DOWN:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_LEFT_DOWN, 0, 0, 0, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_LEFT_UP:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_LEFT_UP, 0, 0, 0, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_RIGHT_CLICK:
                     mouse_event(MouseEventCode.MOUSE_EVENT_RIGHT_DOWN, 0, 0, 0, 0);
                     mouse_event(MouseEventCode.MOUSE_EVENT_RIGHT_UP, 0, 0, 0, 0);
                     break;
 
-                case RedisConst.VALUE_MOUSE_WHEELAHEAD:
+                case RedisConst.VALUE_MOUSE_RIGHT_DOWN:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_RIGHT_DOWN, 0, 0, 0, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_RIGHT_UP:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_RIGHT_UP, 0, 0, 0, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_MIDDLE_CLICK:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_MIDDLE_DOWN, 0, 0, 0, 0);
+                    mouse_event(MouseEventCode.MOUSE_EVENT_MIDDLE_UP, 0, 0, 0, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_MIDDLE_DOWN:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_MIDDLE_DOWN, 0, 0, 0, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_MIDDLE_UP:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_MIDDLE_UP, 0, 0, 0, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_WHEEL_BACKWARD:
+                    mouse_event(MouseEventCode.MOUSE_EVENT_WHEEL, 0, 0, MouseEventCode.MOUSE_DATA_WHEEL_BACKWARD, 0);
+                    break;
+
+                case RedisConst.VALUE_MOUSE_WHEEL_AHEAD:
                     mouse_event(MouseEventCode.MOUSE_EVENT_WHEEL, 0, 0, MouseEventCode.MOUSE_DATA_WHEEL_AHEAD, 0);
                     break;
 

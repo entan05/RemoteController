@@ -1,0 +1,23 @@
+@startuml
+title Redis を使用した場合のシステムイメージ
+
+package "Android スマホ" {
+    class "RemoteControllerClient" as rcc
+}
+
+database Redis {
+
+}
+
+package "Windows PC" {
+    class "RemoteControllerHost" as rch
+    class "操作したいアプリ"
+
+    rch -down-> "操作したいアプリ" : KeyEvent, MouseEvent
+}
+
+rcc -right-> Redis
+
+Redis -right-> rch
+
+@enduml

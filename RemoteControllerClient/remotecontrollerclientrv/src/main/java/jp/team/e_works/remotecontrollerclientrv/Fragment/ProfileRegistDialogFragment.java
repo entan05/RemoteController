@@ -6,6 +6,8 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.CheckResult;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
+import jp.team.e_works.inifilelib.IniFileLoader;
 import jp.team.e_works.inifilelib.IniFileWriter;
 import jp.team.e_works.inifilelib.IniItem;
 import jp.team.e_works.remotecontrollerclientrv.R;
@@ -25,9 +28,14 @@ import jp.team.e_works.remotecontrollerclientrv.util.Const;
 import jp.team.e_works.remotecontrollerclientrv.util.RedisConst;
 
 public class ProfileRegistDialogFragment extends DialogFragment implements View.OnClickListener {
+    private static final String KEY_INIFILE = "key_iniFile";
+
     public interface ProfileRegistListener {
         void onResult(boolean result);
     }
+
+    private boolean mIsNewProfile = true;
+    private String mOldIniFilePath = null;
 
     private ControlButton[] mButtons = new ControlButton[9];
 
@@ -44,6 +52,17 @@ public class ProfileRegistDialogFragment extends DialogFragment implements View.
 
     private int mSelectedButtonIndex = -1;
 
+    @CheckResult
+    public static ProfileRegistDialogFragment createInstance(String iniFilePath) {
+        ProfileRegistDialogFragment fragment = new ProfileRegistDialogFragment();
+
+        Bundle args = new Bundle();
+        args.putString(KEY_INIFILE, iniFilePath);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
     // Profile 登録結果受け取りリスナ登録
     public void setProfileRegistListener(ProfileRegistListener listener) {
         mListener = listener;
@@ -51,8 +70,26 @@ public class ProfileRegistDialogFragment extends DialogFragment implements View.
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        for (int i = 0; i < mButtons.length; i++) {
-            mButtons[i] = new ControlButton("", i, RedisConst.REDIS_EVENT_NONE);
+        mOldIniFilePath = getArguments().getString(KEY_INIFILE, null);
+        String profileName = "";
+
+        if (TextUtils.isEmpty(mOldIniFilePath)) {
+            for (int i = 0; i < mButtons.length; i++) {
+                mButtons[i] = new ControlButton("", i, RedisConst.REDIS_EVENT_NONE);
+            }
+        } else {
+            IniFileLoader loader = new IniFileLoader();
+            loader.load(mOldIniFilePath);
+            for (int i = 0; i < mButtons.length; i++) {
+                String buttonName = loader.getValue(null,
+                        String.format(Locale.US, Const.INI_KEY_BUTTON_X_NAME, i));
+                int buttonCommand = Integer.parseInt(loader.getValue(null,
+                        String.format(Locale.US, Const.INI_KEY_BUTTON_X_COMMAND, i)));
+
+                mButtons[i] = new ControlButton(buttonName, i, buttonCommand);
+            }
+            profileName = loader.getValue(null, Const.INI_KEY_ITEM_NAME);
+            mIsNewProfile = false;
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -78,6 +115,10 @@ public class ProfileRegistDialogFragment extends DialogFragment implements View.
         mCtrlCheck = view.findViewById(R.id.regist_check_ctrl);
         mAltCheck = view.findViewById(R.id.regist_check_alt);
         mShiftCheck = view.findViewById(R.id.regist_check_shift);
+
+        if (!TextUtils.isEmpty(profileName)) {
+            mProfileName.setText(profileName);
+        }
 
         ArrayAdapter<SelectButtonSpinnerItem> spinnerAdapter
                 = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, SelectButtonSpinnerItem.values());
@@ -123,7 +164,7 @@ public class ProfileRegistDialogFragment extends DialogFragment implements View.
                         Integer.toString(getCommandFromInput())));
             }
         }
-        return writer.write(Const.CreateIniFilePath());
+        return writer.write(mIsNewProfile ? Const.CreateIniFilePath() : mOldIniFilePath);
     }
 
     @Override

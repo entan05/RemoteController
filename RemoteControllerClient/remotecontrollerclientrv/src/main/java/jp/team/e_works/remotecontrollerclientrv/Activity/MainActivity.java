@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_add:
-                ProfileRegistDialogFragment dialog = new ProfileRegistDialogFragment();
+                ProfileRegistDialogFragment dialog = ProfileRegistDialogFragment.createInstance(null);
                 dialog.setProfileRegistListener(mProfileRegistListener);
                 dialog.show(getFragmentManager(), "ProfileResistDialog");
                 return true;
@@ -229,6 +229,13 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             updateMainList();
+        }
+
+        @Override
+        public void onProfileEditRequest(String filePath) {
+            ProfileRegistDialogFragment dialog = ProfileRegistDialogFragment.createInstance(filePath);
+            dialog.setProfileRegistListener(mProfileRegistListener);
+            dialog.show(getFragmentManager(), "ProfileResistDialog");
         }
     };
 }

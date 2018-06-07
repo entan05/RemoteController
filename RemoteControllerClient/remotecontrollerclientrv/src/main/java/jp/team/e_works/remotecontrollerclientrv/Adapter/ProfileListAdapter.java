@@ -19,6 +19,8 @@ import jp.team.e_works.remotecontrollerclientrv.object.ProfileListItem;
 public class ProfileListAdapter extends ArrayAdapter<ProfileListItem> {
     public interface OnProfileListUpdateRequestListener {
         void onProfileDeleteRequest(String filePath);
+
+        void onProfileEditRequest(String filePath);
     }
 
     private Activity mActivity;
@@ -58,7 +60,7 @@ public class ProfileListAdapter extends ArrayAdapter<ProfileListItem> {
 
         ((TextView) view.findViewById(R.id.item_name)).setText(item.getItemTitle());
 
-        view.findViewById(R.id.item_option).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.list_item_del).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mActivity == null) {
@@ -82,6 +84,15 @@ public class ProfileListAdapter extends ArrayAdapter<ProfileListItem> {
                     }
                 });
                 dialog.show(mActivity.getFragmentManager(), "AlertDialog");
+            }
+        });
+
+        view.findViewById(R.id.list_item_edit).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mListener != null) {
+                    mListener.onProfileEditRequest(item.getFilePath());
+                }
             }
         });
 

@@ -16,8 +16,8 @@ package "Windows PC" {
     rch -down-> "操作したいアプリ" : KeyEvent, MouseEvent
 }
 
-rcc -right-> Redis
+rcc -up-> Redis : Key操作通知,Mouse操作通知
 
-Redis -right-> rch
+Redis -down-> rch
 
 @enduml

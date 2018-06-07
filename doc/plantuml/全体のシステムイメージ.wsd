@@ -16,8 +16,8 @@ package "Windows PC" {
     rch -down-> "操作したいアプリ" : KeyEvent, MouseEvent
 }
 
-rcc -right-> "なんらか"
+rcc -up-> "なんらか" : Key操作通知,Mouse操作通知
 
-"なんらか" -right-> rch
+"なんらか" -down-> rch
 
 @enduml

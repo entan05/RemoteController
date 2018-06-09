@@ -50,4 +50,7 @@
     <string name="regist_check_ctrl">Ctrl</string>
     <string name="regist_check_alt">Alt</string>
     <string name="regist_check_shift">Shift</string>
+
+    <string name="list_btn_del">Delete</string>
+    <string name="list_btn_edit">Edit</string>
 </resources>

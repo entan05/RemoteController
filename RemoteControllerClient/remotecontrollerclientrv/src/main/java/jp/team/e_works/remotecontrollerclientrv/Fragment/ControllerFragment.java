@@ -15,6 +15,7 @@ import java.util.Locale;
 import jp.team.e_works.inifilelib.IniFileLoader;
 import jp.team.e_works.remotecontrollerclientrv.R;
 import jp.team.e_works.remotecontrollerclientrv.object.ControlButton;
+import jp.team.e_works.remotecontrollerclientrv.object.SelectButtonSpinnerItem;
 import jp.team.e_works.remotecontrollerclientrv.util.Const;
 import jp.team.e_works.remotecontrollerclientrv.util.RedisConst;
 
@@ -102,6 +103,37 @@ public class ControllerFragment extends Fragment implements View.OnClickListener
             if (mButtonDetails[i] != null) {
                 if (!TextUtils.isEmpty(mButtonDetails[i].getText())) {
                     button.setText(mButtonDetails[i].getText());
+                } else {
+                    int command = mButtonDetails[i].getCommand();
+                    StringBuilder buttonTextSb = new StringBuilder();
+                    if ((command & RedisConst.REDIS_KEYEVENT_CTRL) != 0) {
+                        buttonTextSb.append("Ctrl");
+                        command = command & (~RedisConst.REDIS_KEYEVENT_CTRL);
+                    }
+                    if ((command & RedisConst.REDIS_KEYEVENT_ALT) != 0) {
+                        if (buttonTextSb.length() != 0) {
+                            buttonTextSb.append(" + ");
+                        }
+                        buttonTextSb.append("Alt");
+                        command = command & (~RedisConst.REDIS_KEYEVENT_ALT);
+                    }
+                    if ((command & RedisConst.REDIS_KEYEVENT_SHIFT) != 0) {
+                        if (buttonTextSb.length() != 0) {
+                            buttonTextSb.append(" + ");
+                        }
+                        buttonTextSb.append("Shift");
+                        command = command & (~RedisConst.REDIS_KEYEVENT_SHIFT);
+                    }
+                    SelectButtonSpinnerItem item = SelectButtonSpinnerItem.getItem(command);
+                    if (item != null) {
+                        if (buttonTextSb.length() != 0 && item.getRedisCommand() != RedisConst.REDIS_EVENT_NONE) {
+                            buttonTextSb.append(" + ");
+                        }
+                        buttonTextSb.append(item.toString());
+                    }
+                    if (buttonTextSb.length() != 0) {
+                        button.setText(buttonTextSb);
+                    }
                 }
                 // コマンドが登録されていないボタンは非表示にする
                 if (RedisConst.REDIS_EVENT_NONE == mButtonDetails[i].getCommand()) {

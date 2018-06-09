@@ -3,6 +3,8 @@ package jp.team.e_works.remotecontrollerclientrv.object;
 import jp.team.e_works.remotecontrollerclientrv.util.RedisConst;
 
 public enum SelectButtonSpinnerItem {
+    NONE(RedisConst.REDIS_EVENT_NONE),
+
     A(RedisConst.REDIS_KEYEVENT_A),
     B(RedisConst.REDIS_KEYEVENT_B),
     C(RedisConst.REDIS_KEYEVENT_C),
@@ -102,6 +104,9 @@ public enum SelectButtonSpinnerItem {
     public String toString() {
         // 一部の定義は表示名を変える
         switch (this) {
+            case NONE:
+                return "";
+
             case ZERO:
                 return "0";
 

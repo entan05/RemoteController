@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.IpLabel = new System.Windows.Forms.Label();
             this.IpBox = new System.Windows.Forms.TextBox();
             this.PortLabel = new System.Windows.Forms.Label();
@@ -137,6 +138,7 @@
             this.useLocalhostCheckBox.TabIndex = 6;
             this.useLocalhostCheckBox.Text = "use Localhost";
             this.useLocalhostCheckBox.UseVisualStyleBackColor = true;
+            this.useLocalhostCheckBox.Visible = false;
             this.useLocalhostCheckBox.CheckStateChanged += new System.EventHandler(this.useLocalhostCheckBox_CheckStateChanged);
             // 
             // Form1
@@ -145,6 +147,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(511, 322);
             this.Controls.Add(this.tableLayoutPanel1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "RemoteControllerHostRV";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);

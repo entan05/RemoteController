@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.Linq;
 
 using StackExchange.Redis;
 
@@ -18,16 +21,29 @@ namespace RemoteControllerHostRV
         public Form1()
         {
             InitializeComponent();
+
+            // 設定ファイルの読み込み
+            if (File.Exists(Const.SETTING_FILE_PATH))
+            {
+                XElement documentRoot = XDocument.Load(Const.SETTING_FILE_PATH).Element(Const.XML_ROOT);
+
+                // IP
+                if (null != documentRoot.Element(Const.XML_ELEMENT_IP))
+                {
+                    IpBox.Text = documentRoot.Element(Const.XML_ELEMENT_IP).Value;
+                }
+                // Port
+                if (null != documentRoot.Element(Const.XML_ELEMENT_PORT))
+                {
+                    PortBox.Text = documentRoot.Element(Const.XML_ELEMENT_PORT).Value;
+                }
+            }
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             // disconnect処理
-            if (null != m_Subscriber)
-            {
-                m_Subscriber.UnsubscribeAll();
-                m_Subscriber = null;
-            }
+            DisconnectRedis(true);
         }
 
         private void useLocalhostCheckBox_CheckStateChanged(object sender, EventArgs e)
@@ -47,11 +63,8 @@ namespace RemoteControllerHostRV
             if (m_IsConnect)
             {
                 // disconnect処理
-                if (null != m_Subscriber)
-                {
-                    m_Subscriber.UnsubscribeAll();
-                    m_Subscriber = null;
-                }
+                DisconnectRedis(false);
+
                 IpBox.Enabled = true;
                 PortBox.Enabled = true;
                 ConnectBtn.Text = "Connect";
@@ -85,6 +98,49 @@ namespace RemoteControllerHostRV
                 {
 
                 }
+            }
+        }
+
+        /// <summary>
+        /// Redis の Disconnect 処理
+        /// </summary>
+        /// <param name="isSave">設定ファイルの入力値を保存するかどうか</param>
+        private void DisconnectRedis(bool isSave)
+        {
+            // disconnect処理
+            if (null != m_Subscriber)
+            {
+                m_Subscriber.UnsubscribeAll();
+                m_Subscriber = null;
+            }
+            // 設定値の XML への保存
+            if (isSave)
+            {
+                string ip = IpBox.Text;
+                string port = PortBox.Text;
+
+                XmlDocument document = new XmlDocument();
+                document.PreserveWhitespace = true;
+
+                document.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><" + Const.XML_ROOT + "></" + Const.XML_ROOT + ">");
+                if (!string.IsNullOrEmpty(ip))
+                {
+                    XmlElement element = document.CreateElement(Const.XML_ELEMENT_IP);
+                    element.InnerText = ip;
+                    document.DocumentElement.AppendChild(element);
+                }
+                if (!string.IsNullOrEmpty(port))
+                {
+                    XmlElement element = document.CreateElement(Const.XML_ELEMENT_PORT);
+                    element.InnerText = port;
+                    document.DocumentElement.AppendChild(element);
+                }
+
+                if (!Directory.Exists(Const.SETTING_FILE_DIR))
+                {
+                    Directory.CreateDirectory(Const.SETTING_FILE_DIR);
+                }
+                document.Save(Const.SETTING_FILE_PATH);
             }
         }
 

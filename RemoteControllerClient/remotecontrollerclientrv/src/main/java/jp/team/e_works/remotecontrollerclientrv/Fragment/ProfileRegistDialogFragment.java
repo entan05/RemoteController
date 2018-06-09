@@ -87,7 +87,11 @@ public class ProfileRegistDialogFragment extends DialogFragment implements View.
                         String.format(Locale.US, Const.INI_KEY_BUTTON_X_COMMAND, i)));
 
                 if (buttonCommand != RedisConst.REDIS_EVENT_NONE) {
-                    mButtons[i] = new ControlButton(buttonName, i, buttonCommand);
+                    if (!TextUtils.isEmpty(buttonName)) {
+                        mButtons[i] = new ControlButton(buttonName, i, buttonCommand);
+                    } else {
+                        mButtons[i] = new ControlButton("", i, buttonCommand);
+                    }
                 } else {
                     mButtons[i] = new ControlButton("", i, RedisConst.REDIS_EVENT_NONE);
                 }
@@ -157,7 +161,6 @@ public class ProfileRegistDialogFragment extends DialogFragment implements View.
         writer.add(new IniItem(null, Const.INI_KEY_ITEM_NAME, mProfileName.getText().toString()));
         for (int i = 0; i < mButtons.length; i++) {
             if (mSelectedButtonIndex != i) {
-                // todo ボタン名を設定していない場合の処理
                 writer.add(new IniItem(null, String.format(Locale.US, Const.INI_KEY_BUTTON_X_NAME, i),
                         mButtons[i].getText()));
                 writer.add(new IniItem(null, String.format(Locale.US, Const.INI_KEY_BUTTON_X_COMMAND, i),

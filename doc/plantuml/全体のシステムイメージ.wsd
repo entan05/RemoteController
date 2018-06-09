@@ -1,0 +1,23 @@
+@startuml
+title ざっくりしたシステムイメージ
+
+package "Android スマホ" {
+    class "RemoteControllerClient" as rcc
+}
+
+cloud "なんらか" {
+
+}
+
+package "Windows PC" {
+    class "RemoteControllerHost" as rch
+    class "操作したいアプリ"
+
+    rch -down-> "操作したいアプリ" : KeyEvent, MouseEvent
+}
+
+rcc -up-> "なんらか" : Key操作通知,Mouse操作通知
+
+"なんらか" -down-> rch
+
+@enduml

@@ -1,0 +1,23 @@
+@startuml
+title システムイメージ
+
+package "Android スマートフォン" {
+    class "RemoteControllerClient" as rcc
+}
+
+database Redis {
+
+}
+
+package "Windows PC" {
+    class "RemoteControllerHost" as rch
+    class "操作したいアプリケーション"
+
+    rch -down-> "操作したいアプリケーション" : KeyEvent, MouseEvent
+}
+
+rcc -up-> Redis : Key操作通知,Mouse操作通知
+
+Redis -down-> rch
+
+@enduml

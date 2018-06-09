@@ -1,7 +1,7 @@
 @startuml
-title Redis を使用した場合のシステムイメージ
+title システムイメージ
 
-package "Android スマホ" {
+package "Android スマートフォン" {
     class "RemoteControllerClient" as rcc
 }
 
@@ -11,9 +11,9 @@ database Redis {
 
 package "Windows PC" {
     class "RemoteControllerHost" as rch
-    class "操作したいアプリ"
+    class "操作したいアプリケーション"
 
-    rch -down-> "操作したいアプリ" : KeyEvent, MouseEvent
+    rch -down-> "操作したいアプリケーション" : KeyEvent, MouseEvent
 }
 
 rcc -up-> Redis : Key操作通知,Mouse操作通知

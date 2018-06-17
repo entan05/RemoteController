@@ -43,6 +43,18 @@ public class ControllerFragment extends Fragment implements View.OnClickListener
             R.id.btn_button09
     };
 
+    // 変更不可のボタンID
+    private int[] mMainControllerButtonIds = {
+            R.id.btn_enter,
+            R.id.btn_rightClick,
+            R.id.btn_leftArrow,
+            R.id.btn_upArrow,
+            R.id.btn_downArrow,
+            R.id.btn_rightArrow,
+            R.id.btn_wheelBackward,
+            R.id.btn_wheelAhead,
+    };
+
     // イベントを渡すリスナ
     private ControllerListener mListener = null;
 
@@ -88,14 +100,23 @@ public class ControllerFragment extends Fragment implements View.OnClickListener
             }
         }
 
-        view.findViewById(R.id.btn_enter).setOnClickListener(this);
-        view.findViewById(R.id.btn_rightClick).setOnClickListener(this);
-        view.findViewById(R.id.btn_leftArrow).setOnClickListener(this);
-        view.findViewById(R.id.btn_upArrow).setOnClickListener(this);
-        view.findViewById(R.id.btn_downArrow).setOnClickListener(this);
-        view.findViewById(R.id.btn_rightArrow).setOnClickListener(this);
-        view.findViewById(R.id.btn_wheelBackward).setOnClickListener(this);
-        view.findViewById(R.id.btn_wheelAhead).setOnClickListener(this);
+        int displayWidth = view.getContext().getResources().getDisplayMetrics().widthPixels;
+
+        for (int id : mMainControllerButtonIds) {
+            Button button = view.findViewById(id);
+            button.setOnClickListener(this);
+            switch (id) {
+                case R.id.btn_leftArrow:
+                case R.id.btn_upArrow:
+                case R.id.btn_downArrow:
+                case R.id.btn_rightArrow:
+                    button.setWidth(displayWidth / 3);
+                    break;
+
+                default:
+                    button.setWidth((displayWidth / 3) * 2);
+            }
+        }
 
         // ユーザー設定ボタンの設定
         for (int i = 0; i < mButtonIds.length; i++) {
